@@ -34,12 +34,12 @@ const attach_id = (req, res, next) => { // if a jwt token is in the request .. t
 
 const register = (req, res) => {
 
-  console.log(req.body);
+  console.log('req receive is', req.body);
 
-  User.findOne({ email: req.body.email })
+  User.findOne({ email: req.body.email, usernmae: req.body.usernme })
     .then(user => {
       if (user) {
-        return res.status(400).json({success: false, message: "Email ID already registered" });
+        return res.status(400).json({success: false, message: "Email ID or username already registered" });
       } 
 
       else {
@@ -47,6 +47,7 @@ const register = (req, res) => {
         newUser.save((err, doc) => {
           if (err) 
           {
+            console.log("keyvlue",err.keyValue);
             res.status(400).json({success: false, message: "DB Error"});
             console.log(err)
           }
@@ -80,7 +81,8 @@ const login = (req, res) => {
           (err, token) => {
             res.json({
               success: true,
-              token: "Bearer " + token
+              token: "Bearer " + token,
+              user : user
             });
           }
         );

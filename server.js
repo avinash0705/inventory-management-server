@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
+var cors = require('cors')
 
 const mongoose = require('mongoose');
 const mongoURI = process.env.MONGO_URI || require("./server-config.json").mongoURI || "wont_connect_";
@@ -14,6 +15,20 @@ mongoose.connect(mongoURI, {
     console.log('Connected to the database...');
     return response;
 }).catch(err => console.log(err));
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'OPTIONS, GET, POST, PUT, PATCH, DELETE'
+  );
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 
 const userRouter = require('./routes/user.routes');
 app.use('/user', userRouter);
